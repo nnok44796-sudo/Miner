@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL Минёр — Сапёр с магазином</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<!-- ПРЕЛОАДЕР -->
+<div class="preloader" id="preloader">
+    <div class="preloader-content">
+        <div class="preloader-logo">
+            <span class="logo-text-glitch">💣 MINESWEEPER</span>
+        </div>
+        <div class="preloader-progress-container">
+            <div class="preloader-progress" id="preloaderProgress"></div>
+        </div>
+        <div class="preloader-status" id="preloaderStatus">Загрузка минного поля... 0%</div>
+        <div class="preloader-tip" id="preloaderTip">💡 Левая кнопка — открыть, Правая — флаг</div>
+    </div>
+</div>
+
+<!-- АНИМИРОВАННЫЙ ФОН -->
+<div class="universe-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+    <div class="particles-container" id="particlesContainer"></div>
+</div>
+
+<!-- НАВИГАЦИЯ -->
+<nav class="navbar glass-nav">
+    <div class="nav-container">
+        <a href="#" class="logo" onclick="location.reload()">
+            <div class="logo-icon-wrapper">
+                <i class="fas fa-bomb logo-icon"></i>
+            </div>
+            <span class="logo-text">МИНЁР</span>
+        </a>
+
+        <ul class="nav-menu">
+            <li><a href="#" class="nav-link active" data-difficulty="easy">🌱 Новичок 7x7</a></li>
+            <li><a href="#" class="nav-link" data-difficulty="medium">🍀 Любитель 14x14</a></li>
+            <li><a href="#" class="nav-link" data-difficulty="hard">🔥 Профи 18x18</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <div class="coins-badge glass-button" id="coinsBadge">
+                <i class="fas fa-coins"></i>
+                <span class="coins-count" id="coinsCount">0</span>
+            </div>
+
+            <div class="achievements-badge glass-button" id="achievementsBtn">
+                <i class="fas fa-trophy"></i>
+                <span class="achievement-count" id="achievementCount">0</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ОСНОВНОЙ КОНТЕНТ -->
+<main>
+    <div class="game-layout">
+        <!-- ЛЕВАЯ КОЛОНКА - ИГРА -->
+        <div class="game-area">
+            <div class="game-stats">
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">💣</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Мин</span>
+                        <span class="stat-value" id="minesCount">8</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Время</span>
+                        <span class="stat-value" id="timer">000</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Рекорд</span>
+                        <span class="stat-value" id="bestTime">---</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Награда</span>
+                        <span class="stat-value" id="rewardAmount">50</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary glass-button" id="newGameBtn">
+                    <i class="fas fa-redo-alt"></i>
+                    <span>Новая игра</span>
+                </button>
+            </div>
+
+            <div class="game-board-wrapper">
+                <div class="game-board-container glass-panel" id="gameBoardContainer">
+                    <div class="game-board" id="gameBoard"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА - МАГАЗИН -->
+        <div class="shop-area">
+            <div class="shop-panel glass-panel">
+                <div class="shop-header">
+                    <h2><i class="fas fa-shopping-cart"></i> Магазин скинов</h2>
+                    <div class="shop-coins">
+                        <i class="fas fa-coins"></i>
+                        <span id="shopCoinsCount">0</span>
+                    </div>
+                </div>
+
+                <div class="shop-tabs">
+                    <button class="shop-tab active" data-tab="themes">🎨 Темы</button>
+                    <button class="shop-tab" data-tab="flags">🚩 Флаги</button>
+                    <button class="shop-tab" data-tab="mines">💣 Мины</button>
+                </div>
+
+                <div class="shop-content">
+                    <!-- ТЕМЫ -->
+                    <div class="shop-tab-content active" id="tab-themes">
+                        <div class="skin-grid">
+                            <div class="skin-item" data-skin="classic" data-type="theme">
+                                <div class="skin-preview classic"></div>
+                                <div class="skin-info">
+                                    <span>🌙 Классическая</span>
+                                    <span class="skin-price">Бесплатно</span>
+                                </div>
+                                <button class="btn-skin btn-select" onclick="selectSkin('classic', 'theme')">Выбрать</button>
+                            </div>
+
+                            <div class="skin-item locked" data-skin="neon" data-type="theme" data-price="500">
+                                <div class="skin-preview neon"></div>
+                                <div class="skin-info">
+                                    <span>💚 Неоновая</span>
+                                    <span class="skin-price"><i class="fas fa-coins"></i> 500</span>
+                                </div>
+                                <button class="btn-skin btn-buy" onclick="buySkin('neon', 'theme', 500)">Купить</button>
+                            </div>
+
+                            <div class="skin-item locked" data-skin="forest" data-type="theme" data-price="300">
+                                <div class="skin-preview forest"></div>
+                                <div class="skin-info">
+                                    <span>🌿 Лесная</span>
+                                    <span class="skin-price"><i class="fas fa-coins"></i> 300</span>
+                                </div>
+                                <button class="btn-skin btn-buy" onclick="buySkin('forest', 'theme', 300)">Купить</button>
+                            </div>
+
+                            <div class="skin-item locked" data-skin="sunset" data-type="theme" data-price="400">
+                                <div class="skin-preview sunset"></div>
+                                <div class="skin-info">
+                                    <span>🌅 Закатная</span>
+                                    <span class="skin-price"><i class="fas fa-coins"></i> 400</span>
+                                </div>
+                                <button class="btn-skin btn-buy" onclick="buySkin('sunset', 'theme', 400)">Купить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ФЛАГИ -->
+                    <div class="shop-tab-content" id="tab-flags">
+                        <div class="skin-grid">
+                            <div class="skin-item" data-skin="classic" data-type="flag">
+                                <div class="skin-preview flag-classic">🚩</div>
+                                <div class="skin-info">
+                                    <span>🚩 Классический</span>
+                                    <span class="skin-price">Бесплатно</span>
+                                </div>
+                                <button class="btn-skin btn-select" onclick="selectSkin('classic', 'flag')">Выбрать</button>
+                            </div>
+
+                            <div class="skin-item locked" data-skin="crystal" data-type="flag" data-price="200">
+                                <div class="skin-preview flag-crystal">💎</div>
+                                <div class="skin-info">
+                                    <span>💎 Кристальный</span>
+                                    <span class="skin-price"><i class="fas fa-coins"></i> 200</span>
+                                </div>
+                                <button class="btn-skin btn-buy" onclick="buySkin('crystal', 'flag', 200)">Купить</button>
+                            </div>
+
+                            <div class="skin-item locked" data-skin="fire" data-type="flag" data-price="250">
+                                <div class="skin-preview flag-fire">🔥</div>
+                                <div class="skin-info">
+                                    <span>🔥 Огненный</span>
+                                    <span class="skin-price"><i class="fas fa-coins"></i> 250</span>
+                                </div>
+                                <button class="btn-skin btn-buy" onclick="buySkin('fire', 'flag', 250)">Купить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- МИНЫ -->
+                    <div class="shop-tab-content" id="tab-mines">
+                        <div class="skin-grid">
+                            <div class="skin-item" data-skin="classic" data-type="mine">
+                                <div class="skin-preview mine-classic">💣</div>
+                                <div class="skin-info">
+                                    <span>💣 Классическая</span>
+                                    <span class="skin-price">Бесплатно</span>
+                                </div>
+                                <button class="btn-skin btn-select" onclick="selectSkin('classic', 'mine')">Выбрать</button>
+                            </div>
+
+                            <div class="skin-item locked" data-skin="toxic" data-type="mine" data-price="350">
+                                <div class="skin-preview mine-toxic">☣️</div>
+                                <div class="skin-info">
+                                    <span>☣️ Токсичная</span>
+                                    <span class="skin-price"><i class="fas fa-coins"></i> 350</span>
+                                </div>
+                                <button class="btn-skin btn-buy" onclick="buySkin('toxic', 'mine', 350)">Купить</button>
+                            </div>
+
+                            <div class="skin-item locked" data-skin="ice" data-type="mine" data-price="300">
+                                <div class="skin-preview mine-ice">❄️</div>
+                                <div class="skin-info">
+                                    <span>❄️ Ледяная</span>
+                                    <span class="skin-price"><i class="fas fa-coins"></i> 300</span>
+                                </div>
+                                <button class="btn-skin btn-buy" onclick="buySkin('ice', 'mine', 300)">Купить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- МОДАЛЬНОЕ ОКНО ДОСТИЖЕНИЙ -->
+<div class="modal" id="achievementsModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-container glass-panel">
+        <div class="modal-header">
+            <h2><i class="fas fa-trophy"></i> Достижения минёра</h2>
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="achievements-stats">
+                <div class="achievement-progress">
+                    <div class="progress-bar glass-progress">
+                        <div class="progress-fill" id="achievementProgressFill"></div>
+                    </div>
+                    <span id="achievementProgressText">0/6 достижений</span>
+                </div>
+            </div>
+            <div class="achievements-grid" id="achievementsGrid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- УВЕДОМЛЕНИЯ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
